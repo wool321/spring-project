@@ -1,0 +1,24 @@
+ 
+SELECT * FROM USER_TABLE; 
+SELECT * FROM CONTENT_TABLE
+ORDER BY CONTENT_IDX DESC;
+
+DESC CONTENT_TABLE;
+
+-- 게시글 수정하기
+UPDATE CONTENT_TABLE 
+   SET CONTENT_SUBJECT='수정한게시글',
+       CONTENT_TEXT='수정한게시글수정한게시글수정한게시글수정한게시글',
+       CONTENT_FILE='수정한이미지'
+ WHERE CONTENT_IDX=29;       
+       
+SELECT * FROM CONTENT_TABLE
+ORDER BY CONTENT_IDX DESC;
+
+/*
+UPDATE CONTENT_TABLE 
+   SET CONTENT_SUBJECT=#{content_subject}
+      ,CONTENT_TEXT=#{content_text}
+      ,CONTENT_FILE=#{content_file}
+ WHERE CONTENT_IDX=#{content_idx}
+*/

@@ -1,0 +1,1038 @@
+
+작업 내용
+
+boardJava_lec01
+
+front 단에서 주요 link 설정함
+
+HomeContoller.java
+MainController.java
+BoardController.java
+UserController.java
+
+boardJava_lec02
+main.jsp(views) 에 root link 설정함
+글 제목 클릭하면 상세 페이지(board/read)로 이동하기
+                  ㄴ 이미지 나오게 함
+                     <img src="${root }images/tjoeun.png" width="100%"/>						
+main.jsp(views) 에 root link 설정함
+  ㄴ 각 게시판 왼쪽 밑 "더보기" 클릭하면
+     해당 게시판만 나오는 페이지(board/main) 로 이동하게 함
+
+main.jsp(board) 에서도 root link 설정해서
+글 제목 클릭하면 상세 페이지로 이동하게 설정함
+글쓰기 버튼 누르면 (/board/write) 로 이동하게 함
+                     ㄴ href="${root }board/write"
+
+write.jsp(board) 에서 작성하기 버튼 누르면 (/board/read) 로 이동하게 함(GET)
+                                             ㄴ read.jsp(board)
+
+read.jsp(board) 에서 목록보기, 수정하기, 삭제하기 버튼에
+href="${root }board/main", href="${root }board/modify", href="${root }board/delete"
+설정하기
+
+수정하기 <-- href="${root }board/modify"
+modify.jsp 화면에서 수정 완료 버튼 누르면 
+action="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용들을 request scope 에 올리고 
+     Controller 의 메소드에서 이 내용을 공유하여
+     Database 에 update 함 
+취소 버튼 누르면 href="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용이 없으므로 request scope 에 data 를 올리지 않음
+      
+  
+  
+top_menu.jsp 에서
+로그인 버튼 누르면 로그인 화면으로 이동하기
+
+로그인 화면에서 로그인 진행하면
+main 화면으로 이동하기
+
+로그인 화면에서 회원가입 버튼 누르면
+@GetMapping("/user/join") 가 설정된 Controller 의 메소드로 이동하고  
+join.jsp 으로 이동하기
+
+join.jsp 화면에서 회원가입(완료)버튼을 누르면
+로그인 화면으로 이동하기
+
+
+boardJava_lec03 
+  ㄴ MyBatis 설정 (database table 생성 - beans 패키지에 클래스 작성)
+  
+boardJava_lec04
+  ㄴ 상단 왼쪽 메뉴 게시판 메뉴 이름을
+     database 의 BOARD_INFO_TABLE 에서 가져와서 화면에 보이게 하기
+       ㄴ interceptor 에서 처리함 
+  
+  project Run on Server 될 때...
+  HomeController 에서
+  @GetMapping("/") 이 설정되어 있고
+  "redirect:/main" 을 return 하는 메소드에 의해서
+  
+  reviews 폴더 바로 밑에 작성한 main.jsp (VIEW) 가 선택됨
+                                ㄴ main.jsp 에 작성된 code 가 
+                                   response code(html) 가 되어서
+                                   client 의 browser 로 전송(response) 됨
+  
+                                   
+  @GetMapping("/") > @GetMapping("/main") <-- main.jsp (reviews)
+  
+  
+  Controller <-> Service <-> DAO <-> Mapper <-> Database
+     ㄴ (forward OR redirect) / VIEW(jsp)
+     
+     
+  
+  
+  
+  
+
+boardJava_lec05
+   interceptor (preHandle() 메소드) 연습
+   tjoeun 계정에 DEVELOPER 테이블 생성하기 
+
+CREATE TABLE DEVELOPER(
+  EMPNO		VARCHAR2(4) PRIMARY KEY,
+  ENAME     VARCHAR2(20) NOT NULL,
+  HEIGHT    NUMBER(5,2),
+  WEIGHT    NUMBER(5,2)
+);
+
+CREATE TABLE OFFICER(
+  OFFICERNO		VARCHAR2(4) PRIMARY KEY,
+  OFFICERNAME   VARCHAR2(20) NOT NULL,
+  DEPTNAME      VARCHAR2(20),
+  HIREDATE      VARCHAR2
+);
+
+
+
+1) DATABASE 에 TABLE 생성하기 / INSERT .... 
+    ㄴ DML 작업한 후 반드시 COMMIT; 해 주어야 함
+2) 해당 TABLE 에 MAPPING 되는 BEAN 클래스 작성하기
+3) MAPPER 작성하기
+4) MAPPER 등록하기
+5) INTERCEPTOR / CONTROLLER 에서 
+   request.setAttribute() 로 request scope 에 객체 저장하기
+   
+                 @Controller    @Service   @Repository
+    INTERCEPTOR / CONTROLLER <-> Service <-> DAO <->   Mapper <-> Database
+                    ㄴ (forward OR redirect) / VIEW(jsp)
+   
+6) VIEW 에서 화면에 출력하기   
+
+
+-- today_review 20240731 --
+
+ORACLE database 에 SOPHOMORE_SEQ 시퀀스를 생성하고
+                   SOPHOMORE 테이블을 생성하고                  
+
+DROP SEQUENCE SOPHOMORE_SEQ;
+CREATE SEQUENCE SOPHOMORE_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+CREATE TABLE SOPHOMORE(
+  STDNO	    VARCHAR2(4) PRIMARY KEY,
+  NAME      VARCHAR2(20) NOT NULL,
+  GRADE     CHAR(1),
+  DEPTNAME  VARCHAR2(30)
+);
+
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이순신', '2', '인공지능학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '강감찬', '2', '컴퓨터공학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이율곡', '2', '통계학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '유관순', '2', '빅데이터학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '안중근', '2', '수학과');
+
+COMMIT;
+을 실행하고
+
+boardXml05 프로젝트의 beans 패키지에
+Sophomore 클래스를 Bean 으로 작성하고
+
+
+6, 7 교시 때 Developer 와 Officer 객체를 생성해서
+작성했던 code 를 작성하고 실행해 보세요
+
+
+boardJava_lec06
+
+  회원가입 구현하기 (유효성 검사)
+
+  < 비밀번호 일치 여부 검사 >
+  
+  1)  Validator 작성 <-- class UserValidator implements Validator{ }
+  2)  errors.properties 파일에 아래 내용 추가
+      NotEquals.joinUserDTO.user_pw=비밀번호가 일치하지 않습니다
+      NotEquals.joinUserDTO.user_pw2=비밀번호가 일치하지 않습니다
+  3) UserController 에
+     initBinder() 메소드 추가함
+  
+  
+boardJava_lec07
+
+  아이디 중복 확인하기
+  RestController 를 사용함
+  Ajax 통신을 사용함
+   
+  UserMapper 작성 및 등록(ServletAppContext.java 에 등록)
+  
+  
+                 @Controller    @Service   @Repository
+    INTERCEPTOR / CONTROLLER <-> Service <-> DAO <->   Mapper <-> Database
+                    ㄴ (forward OR redirect) / VIEW(jsp)
+   
+아이디중복체크
+join.jsp
+RestAPIController.java
+join.jsp
+UserDTO.java
+join.jsp
+UserController.java
+UserValidator.java
+errors.properties
+
+
+boardJava_lec08
+
+  회원가입 구현
+  
+회원가입
+UserMapper.java
+UserDAO.java
+UserService.java
+UserController.java
+join_success.jsp
+  
+  
+boardJava_lec09
+
+  로그인 기능 구현
+  아이디 / 비밀번호 입력 유효성 검사
+  로그인에 성공하면 
+  로그인한 회원 정보를 session scope 에 저장하기 
+  
+
+로그인 기능 (java)
+UserDTO.java
+RootAppContext.java
+HomeContoller.java
+login.jsp
+UserController.java
+입력유효성검사
+login.jsp : <form:errors ..>
+          : style
+UserController.java : @Valid
+UserValidator.java
+  ㄴ if(errorObjectName.equals("joinUserDTO"))
+로그인한 회원 정보를 SESSION SCOPE 에
+생성된 UserDTO 에 저장하기
+  ㄴ login 한 상태에서는 이 정보를 계속 사용할 수 있음
+UserMapper.java
+UserDAO.java
+UserService.java
+  ㄴ Session Scope 에 있는 
+     loginUserDTO 에 로그인한 회원 정보 저장
+UserController.java
+  UserService 의 getLoginUserInfo() 를 호출해서
+    loginUserDTO.isUserIsLogin() 이 true 인 것을
+    확인하고 login_success.jsp 로 이동함
+top_menu.jsp 에서 오른쪽에 있는 로그인 버튼 눌렀을 때
+login.jsp 가 화면에 나타나면서 로그인 실패 부분이
+나오지 않게 하기
+UserController.java
+ @GetMapping("/login")
+  public String login(@ModelAttribute("validationLoginUserDTO") UserDTO validationLoginUserDTO,
+                      @RequestParam(value="fail", defaultValue="false") boolean fail,
+                      Model model) {
+  	return "user/login";
+  }
+login_failure.jsp
+location.href="${root}user/login?fail=true";
+  
+  
+  로그아웃 기능 (Java)
+
+상단메뉴 설정하기
+TopMenuInterceptor.java 에서
+loginUserDTO 를 주입받아야 되는데
+Java 방식에서는 안 됨
+  ㄴ ServletAppContext.java
+     에서 주입 받아서 
+     TopMenuInterceptor의
+     생성자로 전달함 
+TopMenuInterceptor 에서
+session scope 에 있는
+loginUserDTO 를 request scope 에 올림
+top_menu.jsp 에서 
+<c:choose> 태그로 로그인했을 때와
+하지 않았을 때 보이는 링크를 구분함
+
+UserController.java 에서
+ @GetMapping("/logout")
+  public String logout() 메소드에  	
+loginUserDTO.setUserIsLogin(false);
+  ㄴ 이 code 추가함
+  
+  
+
+boardJava_lec10
+
+  로그인하지 않은 상태에서 특정 페이지에 접근하지 못하도록 하기
+  Interceptor 에서 로그인했는지 확인하고
+  로그인한 경우에만 다음 단계(Controller) 로 진행하도록 함
+
+  LoginCheckInterceptor.java : 작성
+  ServletAppContext.java : LoginCheckInterceptor 등록
+  UserController.java : @GetMapping("/cant_loggin") 메소드 추가 
+  user 폴더에 cant_loggin.jsp 작성 
+
+
+boardJava_lec11
+  로그인한 회원 정보 수정 구현하기
+  
+  user 폴더의 modify.jsp 에 내용 추가하기 
+     : Spring Custom Form tag 로 변경함
+       modelAttribute="modifyUserDTO" 로 설정함
+  UserController.java
+     : @GetMapping("/modify")   <--  메소드 작성하기  
+       public String modify(@ModelAttribute("modifyUserDTO") UserDTO userDTO)
+  
+  UserMapper.java  : UserDTO getModiyUserInfo(int user_idx) 추가
+  UserDAO.java     : public UserDTO getModiyUserInfo(int user_idx) 추가
+  UserService.java : public UserDTO getModiyUserInfo(int user_idx) 추가
+  UserController.java : userService.getModifyUserInfo(modifyUserDTO) 호출함
+  UserService : void getModifyUserInfo(UserDTO modifyUserDTO) 에서
+				 로그인한 회원 idx 로 DB 에서 조회한 결과를 가져와서
+				 Controller 로부터 전달받은 modifyUserDTO 객체에 값을 설정함
+				 로그인한 회원 정보로 설정된 modifyUserDTO 객체는 Controller 에서 사용하며
+				 user/modify.jsp 화면에서 modelAttribute="modifyUserDTO" 부분에서 받아서 사용함             
+                    ㄴ 회원정보수정을 누르면 modify.jsp 가 열리고 
+                       로그인한 회원의 이름과 아이디가 출력되고
+                       비밀번호를 변경할 수 있는 화면이 나타남
+  
+  회원정보 수정 처리하기
+  
+  1) 유효성 검사 (validation)
+  modify.jsp 에서 정보수정 버튼 누르면
+  action 으로 지정한 url pattern 이 설정된
+    ㄴ ${root}user/modify_procedure
+  UserController 의 메소드로 이동하기
+  @PostMapping("/modify_procedure") 이 설정된 메소드에서
+  Validation 수행하기 (UserValidator.java)
+    ㄴ errors.properties 파일에 modifyUserDTO 에 대한
+       error message 작성하기 
+       NotEquals 유효성은 UserValidator 에 추가했으므로
+       ModifyUserDTO 에 대한 조건도 추가해야 적용됨
+  
+  2) 수정된 회원정보를 DataBase 에 반영하기
+  UserMapper.java
+  UserDAO.java
+  UserService.java
+  UserController.java
+  (UserValidator.java : 조건문 수정)
+  modify.jsp
+    : <form:input type="hidden" path="user_idx" /> 추가하면
+       (modifyUserDTO 에 user_idx 가 setting 되므로) 
+      UserService.java 의 modifyUserInfo() 메소드에서
+      modifyUserDTO.setUser_idx(loginUserDTO.getUser_idx());
+        ㄴ 이 code 를 작성하지 않아도 됨
+        
+        
+boardJava_lec12
+  게시글 작성하기
+  게시글 DATABASE 에 저장하기
+  이미지 업로드하기
+    ㄴ StandardServletMultipartResolver 사용
+       form:form 태그에 enctype="multipart/form-data" 추가
+       ServletAppContext.java 에
+       StandardServletMultipartResolver 를 @Bean 으로 등록하기
+       SpringConfigClass.java 에
+       customizeRegistration() 메소드 overriding 하기
+         : MultipartConfigElement(String location, long maxFileSize, long maxRequestSize, int fileSizeThreshold)
+            ㄴ 생성자 사용해서 객체 생성하기
+               maxFileSize 를 50M 로 함
+                              ㄴ 1024 X 50 <-- 52428800
+       ContentDTO 클래스에
+       MultipartFile 타입의 멤버변수 upload_file 추가하기
+       write.jsp 에 첨부 이미지 의 path 에 "upload_file" 할당하기
+       
+       success.jsp 작성
+                                     
+                              
+  
+  BoardController.java
+    ㄴ @GetMapping("/main")
+  
+  
+  업로드 처리하기
+  BoardService.java
+     ㄴ writeContentDTO.getContent_subject()
+        writeContentDTO.getContent_text()
+        writeContentDTO.getUpload_file().size()
+        출력함
+  
+  upload.properties 에 
+  path.upload=C:/workspace/spring2/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/boardJava_lec12/resources/upload
+  저장함
+  
+  BoardService 에서 
+  @PropertySource("/WEB-INF/properties/upload.properties") 으로 
+     upload.properties 파일을 읽고 
+  @Value("${path.upload}") 어노테이션으로 이 경로값을 
+  멤버변수 private String pathUpload 에 저장함
+  
+  resources 폴더에 upload 폴더 추가하기
+  
+  BoardService 에 saveUploadFile() / addContentInfo() 메소드 추가하기
+  
+  
+  게시글 DB 에 insert 하기
+  
+  BoardMapper.java
+    ㄴ #{content_file, jdbcType=VARCHAR} : NULL 값이 들어올 때의 설정
+  BoardDAO.java
+  BoardService.java
+  BoardController.java
+  
+  
+boardJava_lec13
+      top_menu.jsp 에 있는 게시판제목을 누르면
+      해당 게시판의 목록만 있는 페이지로 이동하고
+      게시판 이름에 해당 게시판 이름이 출력되도록 하기
+      
+      BoardMapper.java : String getBoardName(int board_info_idx)
+      BoardDAO.java
+      BoardService.java
+      BoardController.java
+      board/main.jsp  <-- ${boardName } : 해당 게시판 이름 출력
+      
+      top_menu.jsp 왼쪽 위에 있는
+      자유게시판 유머게시판 정치게시판 스포츠게시판 <-- 누르면
+      
+      각 게시판으로 이동하면서 해당 게시판에 올린 
+      게시글들만 목록으로 나오게 하기
+      
+      BoardMapper.java
+      BoardDAO.java
+      BoardService.java
+      BoardController.java
+      
+      board/main.jsp 에서 
+      <c:forEach> 사용함
+  
+  
+boardJava_lec14
+   게시글 읽는 페이지 구현
+   게시글 목록에서 글제목을 클릭하면 상세페이지로 이동하기
+   게시글을 새로 올렸을 때도 상세페이지로 이동하기
+  
+   board/main.jsp 에 아래 code 추가함
+        ?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}
+   <td><a href='${root }board/read?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}'>${content.content_subject }</a></td> 
+   
+   BoardController.java 에서 아래 code 추가함
+   @GetMapping("/read")
+	public String read(@RequestParam("board_info_idx") int board_info_idx, 
+			           @RequestParam("content_idx") int content_idx,
+			           Model model) {
+		
+		model.addAttribute("board_info_idx", board_info_idx);
+		model.addAttribute("content_idx", content_idx);
+		
+		return "board/read";
+	}     
+
+    BoardMapper.java 에서 아래 code 추가함
+    @Select("SELECT C.CONTENT_IDX, C.CONTENT_SUBJECT, U.USER_NAME CONTENT_WRITER_NAME, " + 
+          "TO_CHAR(C.CONTENT_DATE, 'YYYY-MM-DD') CONTENT_DATE " +
+          "FROM CONTENT_TABLE C, USER_TABLE U " +
+          "WHERE C.CONTENT_WRITER_IDX = U.USER_IDX " +
+          "AND C.CONTENT_BOARD_IDX=#{content_board_idx} " +
+          "ORDER BY C.CONTENT_IDX DESC")
+	List<ContentDTO> getContentList(int content_board_idx)
+    
+    BoardDAO.java 에서 아래 code 추가함
+    public ContentDTO getContent(int content_idx) {
+  	  return boardMapper.getContent(content_idx);
+    }
+    
+    BoardService.java 에서 아래 code 추가함
+    public ContentDTO getContent(int content_idx) {
+  	  return boardDAO.getContent(content_idx);
+    }	 
+    
+    BoardController.java 에서 @GetMapping("/read") 에 아래 code 추가함
+    ContentDTO readContentDTO = boardService.getContent(content_idx);
+		model.addAttribute("readContentDTO", readContentDTO);
+    
+    board/read.jsp 에 아래 code 추가함
+    value="${readContentDTO.content_writer_name }"
+    value="${readContentDTO.content_date }" 
+    value="${readContentDTO.content_subject }"
+    ${readContentDTO.content_text }    
+    <c:if test="${readContentDTO.content_file != null}">
+		<div class="form-group">
+			<label for="board_file">첨부 이미지</label>
+			<img src="${root }upload/${readContentDTO.content_file}" width="100%"/>						
+		</div>
+	</c:if>
+    <a href="${root }board/main?board_info_idx=${board_info_idx}" class="btn btn-primary">목록보기</a>
+
+
+    글쓰기할 때 code 추가
+    BoardMapper 에서 아래 code 추가함
+    @SelectKey(statement="SELECT CONTENT_SEQ.NEXTVAL FROM DUAL", 
+			   keyProperty="content_idx", before=true, resultType=int.class)
+	@Insert("INSERT INTO CONTENT_TABLE "
+			    + "VALUES(#{content_idx}, " 에서		   
+	VALUES(CONTENT_SEQ.NEXTVAL 을  VALUES(#{content_idx} 로 수정함
+    
+    BoardController 에서 
+    @GetMapping("/read) 메소드 의 parameter 부분에서
+    board_info_idx, content_idx 를 (request scope 에서) 가져오지 못함
+      ㄴ write_success.jsp 에서 @GetMapping("/read) 로 이동할 때
+         query string  으로 board_info_idx, content_idx 를 (request scope 에) 올리지 않았음
+         
+         수정내용
+         write_success.jsp 에 query string
+         ?board_info_idx=${writeContentDTO.content_board_idx}&content_idx=${writeContentDTO.content_idx}
+         을 추가함
+         
+         
+boardJava_lec15
+     ㄴ 게시글 삭제하기 : 수정버튼과 삭제버튼은 글 올린 사람한테만 보이게 하기
+        
+        BoardController.java 의 @GetMapping("/read") 메소드 에 아래 code 추가        
+        model.addAttribute("content_idx", content_idx);
+        
+        board/read.jsp 에 아래 code 추가
+    	<a href="${root }board/modify?board_info_idx=${board_info_idx}&content_idx=${content_idx}" class="btn btn-info">수정하기</a>
+		<a href="${root }board/delete?board_info_idx=${board_info_idx}&content_idx=${content_idx}" class="btn btn-danger">삭제하기</a>
+		
+		BoardMapper 의 ContentDTO getContent(int content_idx) 메소드 에서
+		SELECT 컬럼에 C.CONTENT_WRITER_IDX 추가하기
+		
+		수정버튼이나 삭제버튼이
+		글 올린 회원의 idx (CONTENT_WRITER_IDX) 와 
+		로그인한 회원의 idx (USER_IDX) 가 같은 경우에만 보이도록 함
+        board/read.jsp 에서 아래 code 추가하기
+	    <c:if test="${readContentDTO.content_writer_idx == loginUserDTO.user_idx }">
+			<a href="${root }board/modify?board_info_idx=${board_info_idx}&content_idx=${content_idx}" class="btn btn-info">수정하기</a>
+			<a href="${root }board/delete?board_info_idx=${board_info_idx}&content_idx=${content_idx}" class="btn btn-danger">삭제하기</a>
+		</c:if>
+		
+		top_menu.jsp 에 아래 code 추가해서 로그인한 사람 이름 보이게 하기
+		<c:when test="${loginUserDTO.userIsLogin == true }"> 에서
+		<li class="nav-item">
+			<p class="loginUserName">${loginUserDTO.user_name} 님, <br>안녕하세요</p>
+		</li>							
+		
+		
+		게시글 삭제하기
+		  ㄴ 삭제버튼을 클릭하면 해당 게시글을 삭제하고
+		     해당 게시판의 글 목록 페이지로 이동하기
+		
+		BoardMapper 에
+		@Delete("DELETE FROM CONTENT_TABLE WHERE CONTENT_IDX=#{content_idx}")
+		void deleteContent(int content_idx);
+		추가하기
+		BoardDAO.java
+		BoardService.java
+		
+		BoardController.java 에 아래 code 작성			
+        @GetMapping("/delete")
+		public String delete(@RequestParam("board_info_idx") int board_info_idx,
+				                 @RequestParam("content_idx") int content_idx,
+				                 Model model) {
+			boardService.deleteContent(content_idx);
+			model.addAttribute("board_info_idx",board_info_idx);
+			return "board/delete";
+		}
+        board/delete.jsp 에 아래 code 작성	
+        location.href="${root}board/main?board_info_idx=${board_info_idx}";
+    
+         
+boardJava_lec16
+     ㄴ 게시글 수정하기 : 
+        1) 
+        수정 페이지나 삭제 페이지의 url 을 직접 입력해서
+        접근할 수 없도록 interceptor 로 처리함
+          ㄴ 글쓴이와 로그인한 회원이 같은지 확인함
+             CheckWriterInterceptor.java
+             다르면... BoardController.java 의 @GetMapping("/cant_write") 으로 이동함
+                         ㄴ return "board/cant_write";
+                                       ㄴ board 폴더의 cant_writer.jsp 로 이동함
+                                          
+        ServletAppContext 의 addInterceptors() 메소드 에서 
+        CheckWriterInterceptor   등록하기 : 
+           ㄴ CheckWriterInterceptor 의 객체를 생성함
+           
+        아래 code 추가함
+        CheckWriterInterceptor checkWriterInterceptor = 
+				new CheckWriterInterceptor(loginUserDTO, boardService);
+		InterceptorRegistration regi3 = registry.addInterceptor(checkWriterInterceptor);
+		regi3.addPathPatterns("/board/modify", "/board/delete");
+		
+		
+			   
+        이렇게 설정하고
+        유관순으로 로그인해서 유관순이 작성한 게시글로 들어가서
+        수정하기 버튼이나 삭제하기 버튼을 누르면
+        http://localhost:9090/boardJava_lec16/board/modity?board_info_idx=2&content_idx=21
+        나
+        http://localhost:9090/boardJava_lec16/board/delete?board_info_idx=2&content_idx=21
+        가
+        주소표시줄에 나오면서 수정과 삭제가 진행되나....
+        
+        유관순으로 로그인해서 이순신이 작성한 게시글로 들어가서
+        http://localhost:9090/boardJava_lec16/board/modity?board_info_idx=2&content_idx=8
+        나
+        http://localhost:9090/boardJava_lec16/board/delete?board_info_idx=2&content_idx=8
+        를 직접입력해서 enter 하면 CheckWriterInterceptor 의 if 문이 동작해서
+        로그인 후 이용해 주세요 라는 경고 메세지가 뜨고
+        main page 로 이동함
+        
+        
+        2)
+        수정 작업 처리하기 : 수정한 내용을 database 에 반영하기
+                                               ㄴ update query 실행 (mapper)
+        BoardController.java 에 아래 code 추가                                      
+        @GetMapping("/modify")
+		public String modify(@RequestParam("board_info_idx") int board_info_idx, 
+				                 @RequestParam("content_idx") int content_idx,
+				                 @ModelAttribute("modifyContentDTO") ContentDTO modifyContentDTO,
+				                 Model model) {
+			
+			model.addAttribute("board_info_idx", board_info_idx);
+			model.addAttribute("content_idx", content_idx);
+			
+			return "board/modify";
+		}
+		
+        board/modify.jsp Spring Custom Form tag 로 변경
+        
+        취소버튼에 query string  추가 
+        <a href="${root }board/read?board_info_idx=${board_info_idx}&content_idx=${content_idx}" class="btn btn-info">취소</a>
+        
+        
+        modify.jsp 화면이 나올 때
+        기존의 게시글 내용이 화면에 나오게 하기
+        
+        BoardController.java
+        @GetMapping("/modify") 메소드에 아래 code 추가하기
+        
+        ContentDTO tmpContentDTO = boardService.getContent(content_idx);
+		
+		modifyContentDTO.setContent_writer_name(tmpContentDTO.getContent_writer_name());
+		modifyContentDTO.setContent_date(tmpContentDTO.getContent_date());
+		modifyContentDTO.setContent_subject(tmpContentDTO.getContent_subject());
+		modifyContentDTO.setContent_text(tmpContentDTO.getContent_text());
+		modifyContentDTO.setContent_file(tmpContentDTO.getContent_file());
+		modifyContentDTO.setContent_writer_idx(tmpContentDTO.getContent_writer_idx());
+		modifyContentDTO.setContent_board_idx(tmpContentDTO.getContent_board_idx());
+		modifyContentDTO.setContent_idx(tmpContentDTO.getContent_idx());
+		
+		modify.jsp  에서 아래 부분 수정함
+		<form:form action="${root }board/modify_procedure" modelAttribute="modifyContentDTO" method="post">
+		
+		수정할 때, 유효성 검사진행하기 위해서		
+		@PostMapping("/modify_procedure") 메소드 작성함
+		
+		유효성 검사 진행시, 이미지가 유지되도록 함
+		modify.jsp  에서 아래 code 추가함
+		form:form 테그에 enctype="multipart/form-data <-- 이 부분 추가하기
+		<img src="${root}upload/${modifyContentDTO.content_file}" width="100%"/>
+		<form:hidden path="content_file"  />  <-- 추가한 부분
+		
+		수정한 내용 database 에 저장하기
+		BoardMapper.java 에 void updateContent(ContentDTO modifyContentDTO) 메소드 추가하기
+		BoardDAO.java
+	    BoardService.java 에 updateContent() 메소드 추가하기
+	    
+	    public void updateContent(ContentDTO modifyContentDTO) {
+    	MultipartFile uploadFile = modifyContentDTO.getUploadFile();
+    	if(uploadFile.getSize() > 0) {
+  		  String uploadFileName = saveUploadFile(uploadFile);
+  		  System.out.println("업로드한 파일 이름 : " + uploadFileName);
+  		  modifyContentDTO.setContent_file(uploadFileName);
+  		}
+    	  boardDAO.updateContent(modifyContentDTO);
+        }
+        
+        BoardController.java 의 @PostMapping("/modify_procedure") 메소드에서
+        boardService.updateContent(modifyContentDTO) 호출하기
+        board/modify_success.jsp 작성하기
+        
+         
+boardJava_lec17
+
+  pagination 
+     ㄴ 게시된 글의 개수가 많은 경우
+        한 페이지당 보여줄 게시글 개수를 정하고
+        페이지 아래에 네비게이션 버튼을 만들어서 이동하도록 한다 
+        org.apache.ibatis.session.RowBounds
+        클래스(RowBounds)를 사용해서 설정함
+        
+  BoardDAO.java 의 insertContent() 메소드에서
+  for 문들 작성해서 한 번에 많은 게시들을 올림     
+  
+  BoardController.java 의  @GetMapping("/main") 메소드에서
+  parameter 에 @RequestParam(value="page", defaultValue="1") int page 추가하기
+  boardService.getContentList(board_info_idx, page) 호출할 때 page 를 argument 로 추가함
+  
+  BoardService 의 code 변경 : getContentList(int content_board_idx, int page)
+  BoardDAO 의 code 변경     : getContentList(int content_board_idx, int page)
+  BoardMapper 의 code 변경  : getContentList(int content_board_idx, int page)
+  
+  BoardService 에서 logic 추가
+  
+  (upload.properties 에서 저장한
+   page.countPerPage=10 : 한 페이지 당 게시글 개수
+   page.countOfPagination=10 : 페이지 네비게이터에 나오는 페이지 개수
+   사용하기)
+   
+   @PropertySource("/WEB-INF/properties/upload.properties")
+     ㄴ @Value("${page.countPerPage}") 
+        private int countPerPage;
+  
+  1 -> 0
+  2 -> 10
+  3 -> 20
+  4 -> 30
+  .....
+  parameter 로 전달받은 page   upload.properties 파일에 저장해 놓은 값 
+  int startPage = (page - 1) * this.countPerPage;
+  RowBounds rowBounds = new RowBounds(startPage, countPerPage);
+  List<ContentDTO> contentList = boardDAO.getContentList(content_board_idx, rowBounds);
+  ( ㄴ BoardService의  getContentList() 메소스에 추가함 )
+  
+  boardService.getContentList(board_info_idx, page) 호출할 때 
+  page 를 rowBounds 로 argument 를 변경함
+  boardService.getContentList(board_info_idx, rowBounds)
+  
+  BoardService 의 code 변경 : getContentList(int content_board_idx, RowBounds rowBounds)
+  BoardDAO 의 code 변경     : getContentList(int content_board_idx, RowBounds rowBounds)
+  BoardMapper 의 code 변경  : getContentList(int content_board_idx, RowBounds rowBounds)
+  
+  
+  
+  pagination 할 때 필요한 page 정보를 저장하는
+  
+  pageDTO 작성하기
+  
+	min         : 페이지 네비게이터에 나오는 최소 페이지 번호
+	max         : 페이지 네비게이터에 나오는 최대 페이지 번호
+	prevPage    : 이전 버튼의 페이지 번호
+	nextPage    : 다음 버튼의 페이지 번호
+	totalPage   : 전체 페이지 개수
+	currentPage : 현재 페이지 번호
+  
+  
+  pageDTO 의 생성자를 아래와 같이 설정함
+    ㄴ pageDTO 의 객체를 생성할 때 여기에 설정된 값들이 
+       메모리에 setting 됨
+        
+  
+  생성자의 parameter 로 아래의 값을 받음
+  countOftotalContent  : (각 게시판 별) 전체 게시글 개수 
+  currentPage   : 현재 페이지 번호
+  countOfPagination : 페이지 네비게이터에 나오는 페이지 개수
+                     (페이지 네비게이터에 나오는 페이지 버튼 개수)
+  countPerPage  : 한 페이지 당 게시글 개수
+  
+  
+  1page 에는  0 번 글부터  9 번 글까지 10 개가 나오게 함
+  2page 에는 10 번 글부터 19 번 글까지 10 개가 나오게 함
+  3page 에는 20 번 글부터 29 번 글까지 10 개가 나오게 함
+  4page 에는 30 번 글부터 39 번 글까지 10 개가 나오게 함
+  .....
+  
+  // 페이지 네비게이터에 나오는 최소 페이지 번호
+  min = ((currentPage - 1) / countPerPage) * countPerPage + 1;
+  
+  // 페이지 네비게이터에 나오는 최대 페이지 번호
+  max = min + countOfPagination - 1;
+  
+  // 최대 페이지로 설정된 값이(max:50) 실제 최대 페이지(totalPage:46)
+  //   ㄴ 최대 페이지를 (max)  실제 최대 페이지(totalPage) 로 설정함  
+  if(max > totalPage){
+    //  맨 마지막 페이지에서는
+    // max 와 totalPage 이 같아짐
+    max = totalPage;
+  }
+  
+  prevPage = min - 1;
+  nextPage = max + 1;
+  
+  맨 마지막 페이지에서는
+  max 와 totalPage 이 같도록 설정해 놨음
+  
+  (마지막 페이지에서)
+  nextPage 가 totalPage(max)  보다 큰 경우
+  다음페이지  실제최대페이지  보다 큰 경우
+    ㄴ nextPage = max + 1;
+  nextPage 를 totalPage(max) 와  같도록 설정함
+  if(nextPage > totalPage){
+    nextPage = totalPage;
+  }
+  
+  
+  BoardMapper.java
+  
+  board_info_idx (BoardInfoDTO)  <--  content_board_idx (ContentDTO)
+  
+  CONTENT_TABLE 에서 CONTENT_BOARD_IDX (1 ~ 4) 에 해당하는
+  게시글 개수 조회하기
+  
+  -- 자유게시판에 있는 게시글 개수
+  -- WHERE CONTENT_BOARD_IDX = 1
+  -- 유머게시판에 있는 게시글 개수
+  -- WHERE CONTENT_BOARD_IDX = 2
+  -- 정치게시판에 있는 게시글 개수
+  -- WHERE CONTENT_BOARD_IDX = 3
+  -- 스포츠게시판에 있는 게시글 개수
+  -- WHERE CONTENT_BOARD_IDX = 4
+  
+  SELECT COUNT(*) FROM CONTENT_TABLE
+   WHERE CONTENT_BOARD_IDX = 1;
+  
+  
+  BoardMapper.java 에
+  int getCountOfContentPerBoard(int content_board_idx); 메소드 추가하기
+  BoardDAO.java
+  BoardService.java
+    : @Value("${page.countOfPagination}")  <-- 추가함 
+	  private int countOfPagination;
+      아래 메소드 작성하기
+      public PageDTO getCountOfContentPerBoard(int content_board_idx, int currentPage) {
+    	// content_board_idx(1 ~ 4) 번호에 해당하는 게시글 전체 개수 
+    	int countOftotalContent = boardDAO.getCountOfContentPerBoard(content_board_idx);
+    	
+    	PageDTO pageDTO = 
+    			 new PageDTO(countOftotalContent, currentPage, countOfPagination, countPerPage);
+    	
+    	return pageDTO;
+      }  
+      
+  BoardController.java  아래 code 작성하기
+  PageDTO pageDTO = boardService.getCountOfContentPerBoard(board_info_idx, page);
+  model.addAttribute("pageDTO", pageDTO);
+  
+  
+  다음은 board/main.jsp... 아래 code 추가
+  
+    <div class="d-none d-md-block">
+		<ul class="pagination justify-content-center">
+			<li class="page-item">
+				<a href="#" class="page-link">이전</a>
+			</li>
+			<c:forEach var="idx" begin="${pageDTO.min}" end="${pageDTO.max}">
+				<li class="page-item">
+					<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${idx}" class="page-link">${idx }</a>
+				</li>
+			</c:forEach>
+			<li class="page-item">
+				<a href="#" class="page-link">다음</a>
+			</li>
+		</ul>
+	</div>
+  
+    
+    이전 / 다음 버튼 설정하기
+    위의 code 를 아래와 같이 수정함
+    
+    <div class="d-none d-md-block">
+		<ul class="pagination justify-content-center">
+			<li class="page-item">
+				<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${pageDTO.prevPage}" class="page-link">이전</a>
+			</li>
+			<c:forEach var="idx" begin="${pageDTO.min}" end="${pageDTO.max}">
+				<li class="page-item">
+					<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${idx}" class="page-link">${idx }</a>
+				</li>
+			</c:forEach>
+			<li class="page-item">
+				<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${pageDTO.nextPage}" class="page-link">다음</a>
+			</li>
+		</ul>
+	</div>
+  
+  
+    선택한 페이지 색상 입히기
+    위 code 를 아래와 같이 수정함
+    <c:forEach var="idx" begin="${pageDTO.min}" end="${pageDTO.max}">
+	<c:choose>
+	<c:when test="${idx == pageDTO.currentPage }" >
+		<li class="page-item active">
+			<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${idx}" class="page-link">${idx }</a>
+		</li>
+	</c:when>
+	<c:otherwise>
+	    <li class="page-item">
+			<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${idx}" class="page-link">${idx }</a>
+		</li>
+	</c:otherwise>	
+	</c:choose>	
+	</c:forEach>
+  
+  
+    1 page 에서는 이전 버튼 비활성화시킴
+    
+    <c:choose>
+   	<c:when test="${pageDTO.prevPage <= 0 }" >	
+		<li class="page-item disabled">
+			<a href="$#" class="page-link">이전</a>
+		</li>
+	</c:when>
+	<c:otherwise>
+		<li class="page-item">
+			<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${pageDTO.prevPage}" class="page-link">이전</a>
+		</li>
+	</c:otherwise>	
+    </c:choose>
+    
+    마지막 page 에서는 다음 버튼 비활성화시킴
+    
+    <c:choose>
+   	<c:when test="${pageDTO.max >= pageDTO.totalPage }" >	
+		<li class="page-item disabled">
+			<a href="#" class="page-link">다음</a>
+		</li>
+	</c:when>
+	<c:otherwise>
+		<li class="page-item">
+			<a href="${root}board/main?board_info_idx=${board_info_idx}&page=${pageDTO.nextPage}" class="page-link">다음</a>
+		</li>
+	</c:otherwise>	
+    </c:choose>	
+    
+    
+    boardJava_lec18
+    
+    BoardController.java 에서 @GetMapping("/main") 메소드에
+    
+    model.addAttribute("page", page); <-- code 추가
+      ㄴ board/main.jsp 로 이동하면서
+         page 를 request scope 에 올림 
+         
+         
+    board/main.jsp 에서 아래 code 수정
+    중간 페이지에서 게시글 제목을 클릭해서
+    해당 게시글의 상세페이지(board/read.jsp) 로 이동한 후
+    다시 해당 게시글이 있는 페이지로 돌아오게 하기
+    (아래 설정을 하지 않으면 무조건 1 page 로 이동함)
+    
+    
+    ?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}
+    
+      ㄴ ?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}&page=${page}
+      
+         
+    <c:forEach var="content" items="${contentList }">
+      <tr>
+		<td class="text-center d-none d-md-table-cell">${content.content_idx }</td>
+		<td><a href='${root }board/read?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}&page=${page}'>${content.content_subject }</a></td>
+		<td class="text-center d-none d-md-table-cell">${content.content_writer_name }</td>
+		<td class="text-center d-none d-md-table-cell">${content.content_date }</td>
+	  </tr>				    
+    </c:forEach>     
+  
+    <td><a href='${root }board/read?board_info_idx=${board_info_idx}&content_idx=${content.content_idx}&page=${page}'>${content.content_subject }</a></td>
+      ㄴ 글 제목을 클릭하면
+         query string 에 추가된 page=${page} 도 request scope 에 올라감
+  
+    BoardController.java 에서 @GetMapping("/read") 메소드의 parameter 에
+         위에서 request scope 에 올린 page 를 @RequestParam("page") int page 로 
+         꺼내서 사용함 : parameter 에 @RequestParam("page") int page 이 code 를 추가함
+  
+         model.addAttribute("readContentDTO", readContentDTO); <-- 추가해서
+         board/read.jsp 에서 사용할 수 있도록 함
+         board/read.jsp 에서 목록보기 버튼을 눌렀을 때 
+         (query string 에 &page=${page}를 추가해서 이동하는 메소드에서 사용할 수 있도록 함)
+                                                   @GetMapping("/main") 
+         (a href="${root }board/main? ... )
+           ㄴ @GetMapping("/board/main") 메소드로 이동함
+                             ㄴ  /board 부분은  @RequestMapping("/board") 로 설정해서
+                                 접두사로 사용됨  
+                                   ㄴ @GetMapping("/main") <-- 메소드로 이동함
+  
+  
+    
+    BoardController.java 에서 @GetMapping("/modify") 메소드의 parameter 에
+     @RequestParam("page") int page <-- 추가하기
+     model.addAttribute("page", page); <-- 추가하기
+    
+    board/modify.jsp 에서
+    목록보기 / 취소 버튼의 query string 에 &page=${page} 추가하기
+    
+    수정완료 버튼(submit button) 클릭할 때 page 를 request scope 에 올리려면
+    <input type="hidden" name="page" value="${page}"/>  <-- 태그 추가하기
+    
+    BoardController.java 에서  @PostMapping("/modify_procedure") 메소드의 parameter 에
+    @RequestParam("page") int page <-- 추가하기
+    model.addAttribute("page", page); <-- 추가하기 
+    
+    board/modify_success.jsp 에서 query string 에 &page=${page} 추가하기
+     
+    
+    boardJava_lec19
+      프로젝트 실행 후, 첫 페이지에서 4 개의 게시판들이 나올 때
+      각 게시판에 올린 게시들의 목록이 나오게 하기
+    
+    com.tjoeun.service 패키지에
+    MainService.java 파일 생성하기 / 아래 code 작성하기
+    
+    @Autowired
+	private BoardDAO boardDAO;
+	
+	public List<ContentDTO> getMainBoardList(int board_info_idx){
+		RowBounds rowBounds = new RowBounds(0 , 5);
+		return boardDAO.getContentList(board_info_idx, rowBounds);
+	}
+	
+	MainController.java 에서 MainService 주입 받아서
+	MainService 의 @GetMapping("/main") 메소드에서
+	List<ContentDTO> getMainBoardList(int board_info_idx) 메소드 호출하기
+	  ㄴ 게시판 하나의 목록을 가져오는 메소드
+	      board_info_idx 에 할당되는 값(1 ~ 4) 에 의해서
+	      어느 게시판을 가져올지가 결정됨
+	      
+	@GetMapping("/main")
+	public String main(Model model) {
+
+		List<List<ContentDTO>> boardList = new ArrayList<List<ContentDTO>>();
+		for(int i = 1; i <= 4; i++) {
+			List<ContentDTO> contentList = mainService.getMainBoardList(i);
+			boardList.add(contentList);
+		}
+		model.addAttribute("boardList", boardList);
+		
+		return "main";
+	}      
+	
+	views 폴더 바로 밑에 있는 main.jsp 수정
+	
+	
+	      
+	      
+	
+	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  
+  
+ 
